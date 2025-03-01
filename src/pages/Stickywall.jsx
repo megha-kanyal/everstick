@@ -51,11 +51,11 @@ export default function StickyWall() {
       <h1 className="text-3xl font-bold mb-6">Sticky Wall</h1>
       <div className="grid grid-cols-2 gap-4">
         {notes.map(note => (
-          <div key={note.id} className={`${note.color} p-4 relative border rounded-lg shadow`}>
+          <div key={note.id} className={`${note.color} p-6 relative border rounded-lg shadow`}> 
             <div className="absolute top-2 right-2">
               <button className="text-gray-500" onClick={() => setDropdownOpen(dropdownOpen === note.id ? null : note.id)}>⋮</button>
               {dropdownOpen === note.id && (
-                <div className="absolute right-0 mt-2 w-24 bg-white border rounded-lg shadow-lg">
+                <div className="absolute right-0 mt-2 w-24 bg-white border rounded-lg shadow-lg" onMouseLeave={() => setDropdownOpen(null)}>
                   <button className="block w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => openEditModal(note)}>Edit</button>
                   <button className="block w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => deleteNote(note.id)}>Delete</button>
                 </div>
@@ -73,14 +73,14 @@ export default function StickyWall() {
             )}
           </div>
         ))}
-        <div className="flex items-center justify-center p-10 border-dashed border-2 cursor-pointer" onClick={() => setModalOpen(true)}>
+        <div className="flex items-center justify-center p-12 border-dashed border-2 cursor-pointer" onClick={() => setModalOpen(true)}> 
           <h2 className="text-4xl">+</h2>
         </div>
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-transparent">
+          <div className="bg-white p-12 rounded-lg shadow-lg border w-[500px] max-w-lg"> 
             <h2 className="text-xl font-bold">{editMode ? "Edit Sticky Note" : "Add New Sticky Note"}</h2>
             {!formOpen ? (
               <div className="flex flex-col items-center">
@@ -95,7 +95,7 @@ export default function StickyWall() {
                 <input
                   placeholder="Title"
                   value={newNote.title}
-                  className="border p-2 w-full rounded mt-2"
+                  className="border p-4 w-full rounded mt-2"
                   onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
                 />
                 <div className="flex items-center my-2">
@@ -104,7 +104,7 @@ export default function StickyWall() {
                 </div>
                 <textarea
                   placeholder={newNote.isList ? "Enter list items, one per line" : "Enter your note content"}
-                  className="border p-2 w-full rounded mt-2"
+                  className="border p-4 w-full rounded mt-2 h-40"
                   value={newNote.content}
                   onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
                 />
