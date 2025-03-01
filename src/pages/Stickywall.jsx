@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Sidebar from '../component/Sidebar';
 
 export default function StickyWall() {
   const [notes, setNotes] = useState([
@@ -56,38 +57,42 @@ export default function StickyWall() {
   };
 
   return (
-    <div className="p-6">
-      
-      <h1 className="text-3xl font-bold mb-6">Sticky Wall</h1>
-      <div className="grid grid-cols-2 gap-4">
-        {notes.map(note => (
-          <div key={note.id} className={`${note.color} p-6 relative border rounded-lg shadow`}>
-            <div className="absolute top-2 right-2">
-              <button className="text-gray-500" onClick={() => setDropdownOpen(dropdownOpen === note.id ? null : note.id)}>⋮</button>
-              {dropdownOpen === note.id && (
-                <div className="absolute right-0 mt-2 w-24 bg-white border rounded-lg shadow-lg" onMouseLeave={() => setDropdownOpen(null)}>
-                  <button className="block w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => openEditModal(note)}>Edit</button>
-                  <button className="block w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => deleteNote(note.id)}>Delete</button>
-                </div>
+    <div className="flex min-h-screen">
+          {/* Sidebar - Left Section */}
+          <div className="w-1/4 bg-gray-100 p-6">
+            <Sidebar />
+          </div>
+      <div className='flex-1 p-6 m-10 mt-6 h-screen'>
+        <h1 className="text-3xl font-bold mb-6">Sticky Wall</h1>
+        <div className="grid grid-cols-2 gap-6"> {/* Increased the gap to 6 */}
+          {notes.map(note => (
+            <div key={note.id} className={`${note.color} p-6 relative rounded-lg shadow`}> {/* Removed the border class */}
+              <div className="absolute m-20">
+                <button className="text-gray-500" onClick={() => setDropdownOpen(dropdownOpen === note.id ? null : note.id)}>⋮</button>
+                {dropdownOpen === note.id && (
+                  <div className="absolute right-0 mt-2 w-24 bg-white border rounded-lg shadow-lg" onMouseLeave={() => setDropdownOpen(null)}>
+                    <button className="block w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => openEditModal(note)}>Edit</button>
+                    <button className="block w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => deleteNote(note.id)}>Delete</button>
+                  </div>
+                )}
+              </div>
+              <h2 className="font-bold text-lg">{note.title}</h2>
+              {note.isList ? (
+                <ul className="mt-2 list-disc pl-5">
+                  {note.content.split("\n").map((line, index) => (
+                    <li key={index}>{line}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-2 whitespace-pre-wrap">{note.content}</p>
               )}
             </div>
-            <h2 className="font-bold text-lg">{note.title}</h2>
-            {note.isList ? (
-              <ul className="mt-2 list-disc pl-5">
-                {note.content.split("\n").map((line, index) => (
-                  <li key={index}>{line}</li>
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-2 whitespace-pre-wrap">{note.content}</p>
-            )}
+          ))}
+          <div className="flex items-center justify-center p-12 border-dashed border-2 cursor-pointer" onClick={() => setModalOpen(true)}>
+            <h2 className="text-4xl">+</h2>
           </div>
-        ))}
-        <div className="flex items-center justify-center p-12 border-dashed border-2 cursor-pointer" onClick={() => setModalOpen(true)}>
-          <h2 className="text-4xl">+</h2>
         </div>
       </div>
-
       {modalOpen && (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-transparent">
           <div className="bg-white p-12 rounded-lg shadow-lg border w-[500px] max-w-lg">

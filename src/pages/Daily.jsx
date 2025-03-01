@@ -1,190 +1,139 @@
 import React, { useState } from 'react';
 import Sidebar from '../component/Sidebar';
 
-export default function Daily() {
-  const [tasks, setTasks] = useState([]);
-  const [newTaskText, setNewTaskText] = useState('');
-  const [editingTaskId, setEditingTaskId] = useState(null);
-  const [editTaskText, setEditTaskText] = useState('');
+export default function StickyWall() {
+  const [notes, setNotes] = useState([
+    { id: 1, title: "Social Media", content: "- Plan social content\n- Build content calendar\n- Plan promotion and distribution", color: "bg-yellow-200", isList: true },
+    { id: 2, title: "Content Strategy", content: "Would need time to get insights...", color: "bg-blue-200", isList: false },
+    { id: 3, title: "Email A/B Tests", content: "- Subject lines\n- Sender\n- CTA\n- Sending times", color: "bg-red-200", isList: true },
+    { id: 4, title: "Banner Ads", content: "Notes from the workshop:...", color: "bg-orange-200", isList: false },
+  ]);
 
-  const addTask = () => {
-    if (newTaskText.trim() === '') return;
-    const newTask = {
-      id: Date.now(),
-      text: newTaskText,
-      completed: false
-    };
-    
-    setTasks([...tasks, newTask]);
-    setNewTaskText('');
-  };
+  const [modalOpen, setModalOpen] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentNote, setCurrentNote] = useState(null);
+  const [newNote, setNewNote] = useState({ title: "", content: "", color: "bg-gray-200", isList: false });
+  const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [error, setError] = useState("");
 
-  const toggleTaskCompletion = (taskId) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    ));
-  };
-
-  const deleteTask = (taskId) => {
-    setTasks(tasks.filter(task => task.id !== taskId));
-  };
-
-  const startEditing = (task) => {
-    setEditingTaskId(task.id);
-    setEditTaskText(task.text);
-  };
-
-  const saveEdit = () => {
-    if (editTaskText.trim() === '') return;
-    
-    setTasks(tasks.map(task => 
-      task.id === editingTaskId ? { ...task, text: editTaskText } : task
-    ));
-    
-    setEditingTaskId(null);
-    setEditTaskText('');
-  };
-
-  const cancelEdit = () => {
-    setEditingTaskId(null);
-    setEditTaskText('');
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      addTask();
+  const addNote = () => {
+    if (!newNote.title || !newNote.content) {
+      setError("Title and content are required.");
+      return;
     }
+    setNotes([...notes, { ...newNote, id: notes.length + 1 }]);
+    resetModal();
   };
 
-  const handleEditKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      saveEdit();
-    } else if (e.key === 'Escape') {
-      cancelEdit();
+  const updateNote = () => {
+    if (!newNote.title || !newNote.content) {
+      setError("Title and content are required.");
+      return;
     }
+    setNotes(notes.map(note => (note.id === currentNote.id ? newNote : note)));
+    resetModal();
+  };
+
+  const openEditModal = (note) => {
+    setEditMode(true);
+    setCurrentNote(note);
+    setNewNote({ title: note.title, content: note.content, color: note.color, isList: note.isList });
+    setModalOpen(true);
+    setFormOpen(true);
+  };
+
+  const deleteNote = (id) => {
+    setNotes(notes.filter(note => note.id !== id));
+  };
+
+  const resetModal = () => {
+    setModalOpen(false);
+    setFormOpen(false);
+    setEditMode(false);
+    setNewNote({ title: "", content: "", color: "bg-gray-200", isList: false });
+    setCurrentNote(null);
+    setError("");
   };
 
   return (
-    <div className='flex min-h-screen '>
-  
-      <div className='w-72 '>
+    <div className='flex min-h-screen'>
+      <div className='w-72'>
         <Sidebar />
       </div>
-   
-      <div className='flex-1 px-6 py-8 mx-4'>
-        <h1 className='text-center text-3xl font-bold mb-8 text-gray-800'>Daily Tasks</h1>
-       
-        <div className='max-w-2xl mx-auto mb-8'>
-          <div className='border rounded-lg flex shadow-sm bg-white overflow-hidden'>
-            <input 
-              className='p-3 flex-1 focus:outline-none' 
-              type="text" 
-              placeholder='Add your task' 
-              value={newTaskText}
-              onChange={(e) => setNewTaskText(e.target.value)}
-              onKeyPress={handleKeyPress}
-            />
-            <button 
-              className="bg-blue-800 text-white px-4 flex justify-center items-center hover:bg-blue-900 transition-colors"
-              onClick={addTask}
-            >
-              Add
-            </button>
-          </div>
-        </div>
-        
-        {/* Task List */}
-        <div className='max-w-2xl mx-auto'>
-          {tasks.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 bg-white rounded-lg shadow p-6">
-              <p className="text-lg">No tasks yet</p>
-            </div>
-          ) : (
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              {tasks.map((task) => (
-                <div 
-                  key={task.id} 
-                  className={`border-b last:border-b-0 p-4 flex items-center ${task.completed ? 'bg-green-50' : ''}`}
-                >
-                  {editingTaskId === task.id ? (
-                    <>
-                      <input
-                        className='p-1 flex-1 border rounded focus:outline-none focus:border-blue-500'
-                        type="text"
-                        value={editTaskText}
-                        onChange={(e) => setEditTaskText(e.target.value)}
-                        onKeyDown={handleEditKeyPress}
-                        autoFocus
-                      />
-                      <button 
-                        onClick={saveEdit}
-                        className="ml-2 text-green-600 hover:text-green-800"
-                      >
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </button>
-                      <button 
-                        onClick={cancelEdit}
-                        className="ml-1 text-gray-400 hover:text-gray-600"
-                      >
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <input
-                        type="checkbox"
-                        checked={task.completed}
-                        onChange={() => toggleTaskCompletion(task.id)}
-                        className="h-5 w-5 text-blue-800 rounded focus:ring-blue-800"
-                      />
-                      <span 
-                        className={`ml-3 flex-1 ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}
-                      >
-                        {task.text}
-                      </span>
-                      <button 
-                        onClick={() => startEditing(task)}
-                        className="text-gray-400 hover:text-blue-500 mr-2"
-                      >
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
-                      <button 
-                        onClick={() => deleteTask(task.id)}
-                        className="text-gray-400 hover:text-red-500"
-                      >
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-          
-          {/* Task Summary */}
-          {tasks.length > 0 && (
-            <div className="mt-4 text-sm text-gray-600 flex justify-between items-center">
-              <span>{tasks.filter(task => task.completed).length} of {tasks.length} tasks completed</span>
-              {tasks.filter(task => task.completed).length > 0 && (
-                <button 
-                  className="text-gray-600 hover:text-red-500 text-sm"
-                  onClick={() => setTasks(tasks.filter(task => !task.completed))}
-                >
-                  Clear completed
-                </button>
+      <div className='flex-1 p-6'>
+        <h1 className="text-3xl font-bold mb-6">Sticky Wall</h1>
+        <div className="grid grid-cols-2 gap-4">
+          {notes.map(note => (
+            <div key={note.id} className={`${note.color} p-6 relative border rounded-lg shadow`}>
+              <div className="absolute top-2 right-2">
+                <button className="text-gray-500" onClick={() => setDropdownOpen(dropdownOpen === note.id ? null : note.id)}>⋮</button>
+                {dropdownOpen === note.id && (
+                  <div className="absolute right-0 mt-2 w-24 bg-white border rounded-lg shadow-lg" onMouseLeave={() => setDropdownOpen(null)}>
+                    <button className="block w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => openEditModal(note)}>Edit</button>
+                    <button className="block w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => deleteNote(note.id)}>Delete</button>
+                  </div>
+                )}
+              </div>
+              <h2 className="font-bold text-lg">{note.title}</h2>
+              {note.isList ? (
+                <ul className="mt-2 list-disc pl-5">
+                  {note.content.split("\n").map((line, index) => (
+                    <li key={index}>{line}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-2 whitespace-pre-wrap">{note.content}</p>
               )}
             </div>
-          )}
+          ))}
+          <div className="flex items-center justify-center p-12 border-dashed border-2 cursor-pointer" onClick={() => setModalOpen(true)}>
+            <h2 className="text-4xl">+</h2>
+          </div>
         </div>
       </div>
+      {modalOpen && (
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-transparent">
+          <div className="bg-white p-12 rounded-lg shadow-lg border w-[500px] max-w-lg">
+            <h2 className="text-xl font-bold">{editMode ? "Edit Sticky Note" : "Add New Sticky Note"}</h2>
+            {!formOpen ? (
+              <div className="flex flex-col items-center">
+                <p>{editMode ? "Edit your note details" : "Do you want to add a new note?"}</p>
+                <div className="mt-4 flex gap-2">
+                  <button className="bg-gray-300 px-4 py-2 rounded" onClick={resetModal}>Cancel</button>
+                  <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={() => setFormOpen(true)}>{editMode ? "Edit Note" : "Add Note"}</button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <input
+                  placeholder="Title"
+                  value={newNote.title}
+                  className="border p-4 w-full rounded mt-2"
+                  onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
+                  required
+                />
+                <div className="flex items-center my-2">
+                  <input type="checkbox" checked={newNote.isList} onChange={() => setNewNote({ ...newNote, isList: !newNote.isList })} />
+                  <span className="ml-2">List Format</span>
+                </div>
+                <textarea
+                  placeholder={newNote.isList ? "Enter list items, one per line" : "Enter your note content"}
+                  className="border p-4 w-full rounded mt-2 h-40"
+                  value={newNote.content}
+                  onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
+                  required
+                />
+                {error && <p className="text-red-500 mt-2">{error}</p>}
+                <div className="mt-4 flex gap-2">
+                  <button className="bg-gray-300 px-4 py-2 rounded" onClick={resetModal}>Cancel</button>
+                  <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={editMode ? updateNote : addNote}>{editMode ? "Save Changes" : "Add New Note"}</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
