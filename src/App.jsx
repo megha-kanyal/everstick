@@ -8,7 +8,7 @@ import Sidebar from './component/Sidebar';
 function App() {
   return (
     <Router>
-      <Sidebar/>
+      {/* <Sidebar/> */}
       <Routes>
         <Route path="/Stickywall" element={<Stickywall />} />
         <Route path="/daily" element={<Daily />} />
