@@ -53,12 +53,13 @@ export default function Upcoming() {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar - Left Section */}
-      <div className="w-1/4 bg-gray-100 p-6">
+      
+      <div className='w-72'>
         <Sidebar />
       </div>
 
       {/* Upcoming Tasks - Right Section */}
-      <div className="w-3/4 p-6">
+      <div className="w-3/4 p-6 mx-4">
         <h1 className="text-3xl font-bold mb-6">Upcoming Tasks</h1>
         <div className="grid grid-cols-2 gap-4">
           {tasks.map(task => (
