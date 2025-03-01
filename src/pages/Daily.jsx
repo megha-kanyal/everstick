@@ -67,7 +67,7 @@ export default function Daily() {
   return (
     <div className='flex min-h-screen '>
   
-      <div className='w-72 shadow-sm'>
+      <div className='w-72 '>
         <Sidebar />
       </div>
    
