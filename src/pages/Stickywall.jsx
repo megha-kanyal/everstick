@@ -57,11 +57,7 @@ export default function StickyWall() {
 
   return (
     <div className="p-6">
-
-      <div className='w-72 '>
-              <Sidebar />
-            </div>
-            
+      
       <h1 className="text-3xl font-bold mb-6">Sticky Wall</h1>
       <div className="grid grid-cols-2 gap-4">
         {notes.map(note => (
